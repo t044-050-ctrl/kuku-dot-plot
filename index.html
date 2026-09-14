@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>九九ドット図</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Zen Maru Gothic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --color-kakeru-bg: #D6EDFB;
+            --color-kakeru-box: #D9F2FB;
+            --color-kakeru-text: #0284C7;
+            --color-kakerareru-bg: #FADB80;
+            --color-kakerareru-box: #FFF09B;
+            --color-kakerareru-text: #B45309;
+            --color-dot: #FB9236;
+            --color-cell-border: #8F8E8E;
+            --color-cell-unselected-border: #F3F4F6; /* さらに薄いグレー */
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background-color: #FFFFFF;
+            margin: 0;
+            padding: 8px;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            position: relative;
+        }
+
+        /* 1画面 / 2画面 モードに応じたサイズ調整 */
+        body.two-views .grid-wrapper {
+            height: 96vh;
+            width: 47vw;
+            max-width: 96vh;
+            max-height: 47vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.two-views #grid-wrapper-2 {
+            display: flex;
+        }
+
+        body.one-view .grid-wrapper {
+            height: 96vh;
+            width: 96vw;
+            max-width: 96vh;
+            max-height: 96vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.one-view #grid-wrapper-2 {
+            display: none !important;
+        }
+
+        .grid-container {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            /* 列: かけられる数ラベル(0.4frに縮小), かけられる数数字(0.7fr), ドット9列(各1fr) */
+            grid-template-columns: 0.4fr 0.7fr repeat(9, 1fr);
+            /* 行: かける数ラベル(0.4frに縮小), かける数数字(0.7fr), ドット9行(各1fr) */
+            grid-template-rows: 0.4fr 0.7fr repeat(9, 1fr);
+            gap: 3px;
+            padding: 4px;
+            background-color: #FFFFFF;
+        }
+
+        /* Top Header Styling (かける数) */
+        .header-kakeru-title {
+            background-color: var(--color-kakeru-bg);
+            color: #0369A1;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: clamp(0.75rem, 1.5vh, 1.05rem);
+            letter-spacing: 0.04em;
+            padding: 1px 4px;
+            justify-self: stretch;
+            align-self: stretch;
+            grid-column: 3 / span 9;
+            grid-row: 1;
+            white-space: nowrap;
+        }
+
+        .num-box-kakeru {
+            background-color: var(--color-kakeru-box);
+            color: #0F172A;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: clamp(1.4rem, 3.5vh, 2.4rem);
+            line-height: 1;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        /* Left Header Styling (かけられる数) */
+        .header-kakerareru-title {
+            background-color: var(--color-kakerareru-bg);
+            color: #78350F;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: clamp(0.75rem, 1.5vh, 1.05rem);
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            letter-spacing: 0.04em;
+            padding: 4px 1px;
+            justify-self: stretch;
+            align-self: stretch;
+            grid-column: 1;
+            grid-row: 3 / span 9;
+            white-space: nowrap;
+        }
+
+        .num-box-kakerareru {
+            background-color: var(--color-kakerareru-box);
+            color: #0F172A;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: clamp(1.4rem, 3.5vh, 2.4rem);
+            line-height: 1;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .grid-cell {
+            aspect-ratio: 1 / 1;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.15s, border-color 0.15s;
+        }
+
+        .grid-cell.selected {
+            background-color: #FDFEF8;
+            border: 2px solid var(--color-cell-border);
+        }
+
+        /* 未選択の枠線を非常に薄いグレーで表示 */
+        .grid-cell.unselected {
+            background-color: #FFFFFF;
+            border: 2px solid var(--color-cell-unselected-border);
+        }
+
+        .dot {
+            width: 78%;
+            height: 78%;
+            border-radius: 50%;
+            background-color: var(--color-dot);
+            transition: transform 0.15s ease, opacity 0.15s ease;
+        }
+
+        .grid-cell.unselected .dot {
+            opacity: 0;
+            transform: scale(0.3);
+        }
+
+        .grid-cell.selected .dot {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* 画面切替ボタンのスタイル */
+        .view-toggle-btn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 100;
+            background-color: rgba(255, 255, 255, 0.92);
+            border: 2px solid #0284C7;
+            color: #0369A1;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .view-toggle-btn:hover {
+            background-color: #0284C7;
+            color: #FFFFFF;
+        }
+
+        .view-toggle-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="one-view">
+
+    <!-- 画面切替ボタン（右上） -->
+    <button id="view-toggle-btn" class="view-toggle-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
+        </svg>
+        <span id="view-toggle-text">2画面にする</span>
+    </button>
+
+    <!-- 左側のドット図（1画面時もこちらを表示） -->
+    <div id="grid-wrapper-1" class="grid-wrapper">
+        <div id="grid-container-1" class="grid-container">
+            <div class="header-kakeru-title shadow-sm">
+                か　け　る　<ruby>数<rt style="font-size: 0.6em; font-weight: bold;">かず</rt></ruby>
+            </div>
+            <div class="header-kakerareru-title shadow-sm">
+                かけられる数
+            </div>
+        </div>
+    </div>
+
+    <!-- 右側のドット図 -->
+    <div id="grid-wrapper-2" class="grid-wrapper">
+        <div id="grid-container-2" class="grid-container">
+            <div class="header-kakeru-title shadow-sm">
+                か　け　る　<ruby>数<rt style="font-size: 0.6em; font-weight: bold;">かず</rt></ruby>
+            </div>
+            <div class="header-kakerareru-title shadow-sm">
+                かけられる数
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // グリッドの状態管理（初期設定: ドット0個）
+        const grids = [
+            { id: 'grid-container-1', multiplicand: 0, multiplier: 0, isDragging: false },
+            { id: 'grid-container-2', multiplicand: 0, multiplier: 0, isDragging: false }
+        ];
+
+        // 初期設定: 1画面
+        let isTwoViews = false;
+
+        // 画面切り替えの処理
+        function toggleViewMode() {
+            isTwoViews = !isTwoViews;
+            const body = document.body;
+            const btnText = document.getElementById('view-toggle-text');
+
+            if (isTwoViews) {
+                body.classList.remove('one-view');
+                body.classList.add('two-views');
+                btnText.innerText = '1画面にする';
+            } else {
+                body.classList.remove('two-views');
+                body.classList.add('one-view');
+                btnText.innerText = '2画面にする';
+            }
+        }
+
+        function initGrids() {
+            // 切替ボタンのイベント
+            document.getElementById('view-toggle-btn').addEventListener('click', toggleViewMode);
+
+            grids.forEach((gridState, index) => {
+                const container = document.getElementById(gridState.id);
+
+                // 1. Top Column Headers (かける数 1~9)
+                for (let c = 1; c <= 9; c++) {
+                    const numBox = document.createElement('div');
+                    numBox.id = `col-num-${index}-${c}`;
+                    numBox.className = 'num-box-kakeru shadow-sm';
+                    numBox.innerText = c;
+                    numBox.style.gridColumn = c + 2;
+                    numBox.style.gridRow = 2;
+
+                    numBox.addEventListener('pointerdown', (e) => {
+                        e.preventDefault();
+                        setDimensions(index, gridState.multiplicand, c);
+                    });
+                    container.appendChild(numBox);
+                }
+
+                // 2. Grid Cells and Row Headers (かけられる数 1~9)
+                for (let r = 1; r <= 9; r++) {
+                    const rowBox = document.createElement('div');
+                    rowBox.id = `row-num-${index}-${r}`;
+                    rowBox.className = 'num-box-kakerareru shadow-sm';
+                    rowBox.innerText = r;
+                    rowBox.style.gridColumn = 2;
+                    rowBox.style.gridRow = r + 2;
+
+                    rowBox.addEventListener('pointerdown', (e) => {
+                        e.preventDefault();
+                        setDimensions(index, r, gridState.multiplier);
+                    });
+                    container.appendChild(rowBox);
+
+                    for (let c = 1; c <= 9; c++) {
+                        const cell = document.createElement('div');
+                        cell.id = `cell-${index}-${r}-${c}`;
+                        cell.dataset.gridIndex = index;
+                        cell.dataset.row = r;
+                        cell.dataset.col = c;
+                        cell.style.gridColumn = c + 2;
+                        cell.style.gridRow = r + 2;
+
+                        const dot = document.createElement('div');
+                        dot.className = 'dot';
+                        cell.appendChild(dot);
+
+                        cell.addEventListener('pointerdown', (e) => {
+                            e.preventDefault();
+                            gridState.isDragging = true;
+                            setDimensions(index, r, c);
+                        });
+
+                        cell.addEventListener('pointerenter', () => {
+                            if (gridState.isDragging) {
+                                setDimensions(index, r, c);
+                            }
+                        });
+
+                        container.appendChild(cell);
+                    }
+                }
+
+                // タッチ・ドラッグ操作対応
+                container.addEventListener('pointermove', (e) => {
+                    if (!gridState.isDragging) return;
+                    const target = document.elementFromPoint(e.clientX, e.clientY);
+                    if (target) {
+                        const cell = target.closest('.grid-cell');
+                        if (cell && cell.dataset.gridIndex == index) {
+                            const r = parseInt(cell.dataset.row);
+                            const c = parseInt(cell.dataset.col);
+                            if (r && c) {
+                                setDimensions(index, r, c);
+                            }
+                        }
+                    }
+                });
+
+                renderGrid(index);
+            });
+
+            window.addEventListener('pointerup', () => {
+                grids.forEach(g => g.isDragging = false);
+            });
+        }
+
+        function setDimensions(index, r, c) {
+            grids[index].multiplicand = Math.max(0, Math.min(9, r));
+            grids[index].multiplier = Math.max(0, Math.min(9, c));
+            renderGrid(index);
+        }
+
+        function renderGrid(index) {
+            const gridState = grids[index];
+
+            for (let r = 1; r <= 9; r++) {
+                for (let c = 1; c <= 9; c++) {
+                    const cell = document.getElementById(`cell-${index}-${r}-${c}`);
+                    if (!cell) continue;
+
+                    const isSelected = (gridState.multiplicand > 0 && gridState.multiplier > 0 && r <= gridState.multiplicand && c <= gridState.multiplier);
+                    cell.className = isSelected ? 'grid-cell selected' : 'grid-cell unselected';
+                }
+            }
+
+            // かける数 ハイライト
+            for (let c = 1; c <= 9; c++) {
+                const colBox = document.getElementById(`col-num-${index}-${c}`);
+                if (!colBox) continue;
+                if (gridState.multiplier > 0 && c <= gridState.multiplier) {
+                    colBox.style.opacity = '1';
+                    colBox.style.border = '2px solid #0284C7';
+                } else {
+                    colBox.style.opacity = '0.4';
+                    colBox.style.border = 'none';
+                }
+            }
+
+            // かけられる数 ハイライト
+            for (let r = 1; r <= 9; r++) {
+                const rowBox = document.getElementById(`row-num-${index}-${r}`);
+                if (!rowBox) continue;
+                if (gridState.multiplicand > 0 && r <= gridState.multiplicand) {
+                    rowBox.style.opacity = '1';
+                    rowBox.style.border = '2px solid #B45309';
+                } else {
+                    rowBox.style.opacity = '0.4';
+                    rowBox.style.border = 'none';
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', initGrids);
+    </script>
+</body>
+</html>
