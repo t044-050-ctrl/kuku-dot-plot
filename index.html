@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>九九ドット図</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Zen Maru Gothic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
@@ -21,7 +19,7 @@
             --color-kakerareru-text: #B45309;
             --color-dot: #FB9236;
             --color-cell-border: #8F8E8E;
-            --color-cell-unselected-border: #F3F4F6; /* さらに薄いグレー */
+            --color-cell-unselected-border: #F3F4F6;
         }
 
         * {
@@ -46,7 +44,7 @@
             position: relative;
         }
 
-        /* 1画面 / 2画面 モードに応じたサイズ調整 */
+        /* 画面レイアウト */
         body.two-views .grid-wrapper {
             height: 96vh;
             width: 47vw;
@@ -79,16 +77,14 @@
             width: 100%;
             height: 100%;
             display: grid;
-            /* 列: かけられる数ラベル(0.4frに縮小), かけられる数数字(0.7fr), ドット9列(各1fr) */
             grid-template-columns: 0.4fr 0.7fr repeat(9, 1fr);
-            /* 行: かける数ラベル(0.4frに縮小), かける数数字(0.7fr), ドット9行(各1fr) */
             grid-template-rows: 0.4fr 0.7fr repeat(9, 1fr);
             gap: 3px;
             padding: 4px;
             background-color: #FFFFFF;
         }
 
-        /* Top Header Styling (かける数) */
+        /* ヘッダー要素 */
         .header-kakeru-title {
             background-color: var(--color-kakeru-bg);
             color: #0369A1;
@@ -97,8 +93,8 @@
             align-items: center;
             justify-content: center;
             font-weight: 900;
-            font-size: clamp(0.75rem, 1.5vh, 1.05rem);
-            letter-spacing: 0.04em;
+            font-size: clamp(0.85rem, 1.8vh, 1.2rem);
+            letter-spacing: 0.06em;
             padding: 1px 4px;
             justify-self: stretch;
             align-self: stretch;
@@ -115,13 +111,12 @@
             align-items: center;
             justify-content: center;
             font-weight: 900;
-            font-size: clamp(1.4rem, 3.5vh, 2.4rem);
+            font-size: clamp(1.8rem, 4.5vh, 3.2rem);
             line-height: 1;
             cursor: pointer;
             transition: all 0.15s ease;
         }
 
-        /* Left Header Styling (かけられる数) */
         .header-kakerareru-title {
             background-color: var(--color-kakerareru-bg);
             color: #78350F;
@@ -130,10 +125,10 @@
             align-items: center;
             justify-content: center;
             font-weight: 900;
-            font-size: clamp(0.75rem, 1.5vh, 1.05rem);
+            font-size: clamp(0.85rem, 1.8vh, 1.2rem);
             writing-mode: vertical-rl;
             text-orientation: upright;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.06em;
             padding: 4px 1px;
             justify-self: stretch;
             align-self: stretch;
@@ -150,12 +145,13 @@
             align-items: center;
             justify-content: center;
             font-weight: 900;
-            font-size: clamp(1.4rem, 3.5vh, 2.4rem);
+            font-size: clamp(1.8rem, 4.5vh, 3.2rem);
             line-height: 1;
             cursor: pointer;
             transition: all 0.15s ease;
         }
 
+        /* セル・ドット */
         .grid-cell {
             aspect-ratio: 1 / 1;
             border-radius: 10px;
@@ -171,7 +167,6 @@
             border: 2px solid var(--color-cell-border);
         }
 
-        /* 未選択の枠線を非常に薄いグレーで表示 */
         .grid-cell.unselected {
             background-color: #FFFFFF;
             border: 2px solid var(--color-cell-unselected-border);
@@ -195,16 +190,18 @@
             transform: scale(1);
         }
 
-        /* 画面切替ボタンのスタイル */
+        /* 画面切替ボタン */
         .view-toggle-btn {
             position: fixed;
             top: 10px;
             right: 10px;
+            width: 132px;
+            height: 38px;
             z-index: 100;
-            background-color: rgba(255, 255, 255, 0.92);
+            background-color: rgba(255, 255, 255, 0.95);
             border: 2px solid #0284C7;
             color: #0369A1;
-            padding: 6px 14px;
+            padding: 0 6px;
             border-radius: 9999px;
             font-size: 0.85rem;
             font-weight: 900;
@@ -212,8 +209,10 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
             display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: center;
+            gap: 4px;
             transition: all 0.15s ease;
+            box-sizing: border-box;
         }
 
         .view-toggle-btn:hover {
@@ -223,6 +222,102 @@
 
         .view-toggle-btn:active {
             transform: scale(0.95);
+        }
+
+        /* ペンツールバー配置（1画面モード） */
+        body.one-view .pen-toolbar {
+            position: fixed;
+            top: 54px;
+            right: 10px;
+            width: 132px;
+            z-index: 100;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 4px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #E2E8F0;
+            box-sizing: border-box;
+        }
+
+        /* ペンツールバー配置（2画面モード） */
+        body.two-views .pen-toolbar {
+            position: fixed;
+            top: 10px;
+            right: 148px;
+            height: 38px;
+            z-index: 100;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 4px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 2px 4px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #E2E8F0;
+            box-sizing: border-box;
+        }
+
+        /* 面取り正方形ボタン */
+        .pen-btn {
+            width: 100%;
+            height: 32px;
+            border-radius: 6px;
+            border: 1.5px solid #CBD5E1;
+            background-color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.52rem;
+            font-weight: 900;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+            padding: 1px;
+            white-space: nowrap;
+            letter-spacing: -0.04em;
+            box-sizing: border-box;
+        }
+
+        body.two-views .pen-btn {
+            width: 32px;
+            height: 32px;
+        }
+
+        .pen-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+        }
+
+        .pen-btn:active {
+            transform: scale(0.95);
+        }
+
+        .pen-btn.active {
+            border-color: #0284C7;
+            background-color: #E0F2FE;
+            color: #0369A1;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* キャンバスレイヤー */
+        .canvas-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .canvas-overlay.active {
+            pointer-events: auto;
         }
     </style>
 </head>
@@ -236,7 +331,43 @@
         <span id="view-toggle-text">2画面にする</span>
     </button>
 
-    <!-- 左側のドット図（1画面時もこちらを表示） -->
+    <!-- ペンツールバー -->
+    <div id="pen-toolbar" class="pen-toolbar">
+        <button id="btn-pen-black" class="pen-btn" title="黒ペン">
+            <span class="w-2.5 h-2.5 rounded-full bg-black mb-0.5"></span>
+            <span>黒</span>
+        </button>
+        <button id="btn-pen-red" class="pen-btn" title="赤ペン">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500 mb-0.5"></span>
+            <span>赤</span>
+        </button>
+        <button id="btn-pen-blue" class="pen-btn" title="青ペン">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-500 mb-0.5"></span>
+            <span>青</span>
+        </button>
+        <button id="btn-eraser" class="pen-btn" title="けしゴム">
+            <svg class="w-3 h-3 text-slate-700 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 20H7L3 16C2.5 15.5 2.5 14.5 3 14L13 4C13.5 3.5 14.5 3.5 15 4L20 9C20.5 9.5 20.5 10.5 20 11L11 20"/>
+                <path d="M6 11L13 18"/>
+            </svg>
+            <span>けしゴム</span>
+        </button>
+        <button id="btn-clear" class="pen-btn" title="全消去">
+            <span class="text-[10px] leading-none mb-0.5">🗑️</span>
+            <span>全消去</span>
+        </button>
+        <button id="btn-laser" class="pen-btn" title="レーザーポインター">
+            <span class="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_4px_#ef4444] mb-0.5"></span>
+            <span>レーザー</span>
+        </button>
+    </div>
+
+    <!-- お絵描き用キャンバス層 -->
+    <canvas id="draw-canvas" class="canvas-overlay"></canvas>
+    <!-- レーザーポインター用キャンバス層 -->
+    <canvas id="laser-canvas" class="canvas-overlay"></canvas>
+
+    <!-- 左側のドット図（1画面時も表示） -->
     <div id="grid-wrapper-1" class="grid-wrapper">
         <div id="grid-container-1" class="grid-container">
             <div class="header-kakeru-title shadow-sm">
@@ -248,7 +379,7 @@
         </div>
     </div>
 
-    <!-- 右側のドット図 -->
+    <!-- 右側のドット図（2画面時） -->
     <div id="grid-wrapper-2" class="grid-wrapper">
         <div id="grid-container-2" class="grid-container">
             <div class="header-kakeru-title shadow-sm">
@@ -261,14 +392,32 @@
     </div>
 
     <script>
-        // グリッドの状態管理（初期設定: ドット0個）
+        // グリッド状態管理
         const grids = [
             { id: 'grid-container-1', multiplicand: 0, multiplier: 0, isDragging: false },
             { id: 'grid-container-2', multiplicand: 0, multiplier: 0, isDragging: false }
         ];
 
-        // 初期設定: 1画面
         let isTwoViews = false;
+        let activeTool = null; // null (指モード), 'black', 'red', 'blue', 'eraser', 'laser'
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        // レーザーポインターの軌跡データ [{ points: [{x, y, time}], id }]
+        let laserPaths = [];
+
+        const drawCanvas = document.getElementById('draw-canvas');
+        const drawCtx = drawCanvas.getContext('2d');
+        const laserCanvas = document.getElementById('laser-canvas');
+        const laserCtx = laserCanvas.getContext('2d');
+
+        function resizeCanvases() {
+            drawCanvas.width = window.innerWidth;
+            drawCanvas.height = window.innerHeight;
+            laserCanvas.width = window.innerWidth;
+            laserCanvas.height = window.innerHeight;
+        }
 
         // 画面切り替えの処理
         function toggleViewMode() {
@@ -285,12 +434,162 @@
                 body.classList.add('one-view');
                 btnText.innerText = '2画面にする';
             }
+            resizeCanvases();
+        }
+
+        // ペンツールの選択切替
+        function selectTool(tool) {
+            if (tool === 'clear') {
+                drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+                laserPaths = [];
+                laserCtx.clearRect(0, 0, laserCanvas.width, laserCanvas.height);
+                selectTool(null);
+                return;
+            }
+
+            if (activeTool === tool) {
+                activeTool = null; // 再タップで選択解除 (指モードへ)
+            } else {
+                activeTool = tool;
+            }
+
+            // ボタンのアクティブ状態を更新
+            ['black', 'red', 'blue', 'eraser', 'laser'].forEach(t => {
+                const btn = document.getElementById(`btn-${t === 'eraser' ? 'eraser' : (t === 'laser' ? 'laser' : 'pen-' + t)}`);
+                if (btn) {
+                    if (activeTool === t) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                }
+            });
+
+            // キャンバスのポインターイベント制御
+            if (activeTool) {
+                drawCanvas.classList.add('active');
+                laserCanvas.classList.add('active');
+            } else {
+                drawCanvas.classList.remove('active');
+                laserCanvas.classList.remove('active');
+            }
+        }
+
+        // 描画開始
+        function startDrawing(e) {
+            if (!activeTool) return;
+            isDrawing = true;
+            const x = e.clientX || (e.touches && e.touches[0].clientX);
+            const y = e.clientY || (e.touches && e.touches[0].clientY);
+            lastX = x;
+            lastY = y;
+
+            if (activeTool === 'laser') {
+                laserPaths.push({
+                    points: [{ x, y, time: Date.now() }]
+                });
+            } else {
+                drawCtx.beginPath();
+                drawCtx.moveTo(x, y);
+            }
+        }
+
+        // 描画中
+        function draw(e) {
+            if (!isDrawing || !activeTool) return;
+            const x = e.clientX || (e.touches && e.touches[0].clientX);
+            const y = e.clientY || (e.touches && e.touches[0].clientY);
+
+            if (activeTool === 'laser') {
+                const currentPath = laserPaths[laserPaths.length - 1];
+                if (currentPath) {
+                    currentPath.points.push({ x, y, time: Date.now() });
+                }
+            } else {
+                drawCtx.lineWidth = activeTool === 'eraser' ? 24 : 4;
+                drawCtx.lineCap = 'round';
+                drawCtx.lineJoin = 'round';
+
+                if (activeTool === 'eraser') {
+                    drawCtx.globalCompositeOperation = 'destination-out';
+                } else {
+                    drawCtx.globalCompositeOperation = 'source-over';
+                    if (activeTool === 'black') drawCtx.strokeStyle = '#000000';
+                    else if (activeTool === 'red') drawCtx.strokeStyle = '#EF4444';
+                    else if (activeTool === 'blue') drawCtx.strokeStyle = '#3B82F6';
+                }
+
+                drawCtx.lineTo(x, y);
+                drawCtx.stroke();
+            }
+
+            lastX = x;
+            lastY = y;
+        }
+
+        // 描画終了
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        // レーザーポインターのアニメーションループ (2秒後に消滅)
+        function renderLaser() {
+            laserCtx.clearRect(0, 0, laserCanvas.width, laserCanvas.height);
+            const now = Date.now();
+
+            laserPaths.forEach(path => {
+                // 2秒以内のポイントだけ保持
+                path.points = path.points.filter(p => now - p.time < 2000);
+
+                if (path.points.length < 2) return;
+
+                for (let i = 1; i < path.points.length; i++) {
+                    const p1 = path.points[i - 1];
+                    const p2 = path.points[i];
+                    const age = now - p2.time;
+                    const alpha = Math.max(0, 1 - age / 2000);
+
+                    laserCtx.beginPath();
+                    laserCtx.moveTo(p1.x, p1.y);
+                    laserCtx.lineTo(p2.x, p2.y);
+                    laserCtx.strokeStyle = `rgba(239, 68, 68, ${alpha})`;
+                    laserCtx.lineWidth = 6;
+                    laserCtx.lineCap = 'round';
+                    laserCtx.shadowColor = '#EF4444';
+                    laserCtx.shadowBlur = 8;
+                    laserCtx.stroke();
+                }
+            });
+
+            // 空になったパスの削除
+            laserPaths = laserPaths.filter(path => path.points.length > 0);
+
+            requestAnimationFrame(renderLaser);
         }
 
         function initGrids() {
-            // 切替ボタンのイベント
             document.getElementById('view-toggle-btn').addEventListener('click', toggleViewMode);
 
+            // ペンツールボタンのイベント登録
+            document.getElementById('btn-pen-black').addEventListener('click', () => selectTool('black'));
+            document.getElementById('btn-pen-red').addEventListener('click', () => selectTool('red'));
+            document.getElementById('btn-pen-blue').addEventListener('click', () => selectTool('blue'));
+            document.getElementById('btn-eraser').addEventListener('click', () => selectTool('eraser'));
+            document.getElementById('btn-clear').addEventListener('click', () => selectTool('clear'));
+            document.getElementById('btn-laser').addEventListener('click', () => selectTool('laser'));
+
+            // お絵描き用イベント
+            window.addEventListener('resize', resizeCanvases);
+            resizeCanvases();
+
+            [laserCanvas, drawCanvas].forEach(canvas => {
+                canvas.addEventListener('pointerdown', startDrawing);
+                canvas.addEventListener('pointermove', draw);
+                canvas.addEventListener('pointerup', stopDrawing);
+                canvas.addEventListener('pointercancel', stopDrawing);
+            });
+
+            // グリッド構築
             grids.forEach((gridState, index) => {
                 const container = document.getElementById(gridState.id);
 
@@ -304,6 +603,7 @@
                     numBox.style.gridRow = 2;
 
                     numBox.addEventListener('pointerdown', (e) => {
+                        if (activeTool) return;
                         e.preventDefault();
                         setDimensions(index, gridState.multiplicand, c);
                     });
@@ -320,6 +620,7 @@
                     rowBox.style.gridRow = r + 2;
 
                     rowBox.addEventListener('pointerdown', (e) => {
+                        if (activeTool) return;
                         e.preventDefault();
                         setDimensions(index, r, gridState.multiplier);
                     });
@@ -339,13 +640,14 @@
                         cell.appendChild(dot);
 
                         cell.addEventListener('pointerdown', (e) => {
+                            if (activeTool) return;
                             e.preventDefault();
                             gridState.isDragging = true;
                             setDimensions(index, r, c);
                         });
 
                         cell.addEventListener('pointerenter', () => {
-                            if (gridState.isDragging) {
+                            if (!activeTool && gridState.isDragging) {
                                 setDimensions(index, r, c);
                             }
                         });
@@ -356,7 +658,7 @@
 
                 // タッチ・ドラッグ操作対応
                 container.addEventListener('pointermove', (e) => {
-                    if (!gridState.isDragging) return;
+                    if (activeTool || !gridState.isDragging) return;
                     const target = document.elementFromPoint(e.clientX, e.clientY);
                     if (target) {
                         const cell = target.closest('.grid-cell');
@@ -376,6 +678,9 @@
             window.addEventListener('pointerup', () => {
                 grids.forEach(g => g.isDragging = false);
             });
+
+            // レーザーアニメーションループスタート
+            requestAnimationFrame(renderLaser);
         }
 
         function setDimensions(index, r, c) {
