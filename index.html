@@ -231,8 +231,8 @@
             right: 10px;
             width: 132px;
             z-index: 100;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            display: flex;
+            flex-direction: column;
             gap: 4px;
             background-color: rgba(255, 255, 255, 0.9);
             padding: 4px;
@@ -240,6 +240,12 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             border: 1px solid #E2E8F0;
             box-sizing: border-box;
+        }
+
+        body.one-view .toolbar-row {
+            display: flex;
+            gap: 4px;
+            width: 100%;
         }
 
         /* ペンツールバー配置（2画面モード） */
@@ -261,9 +267,13 @@
             box-sizing: border-box;
         }
 
+        body.two-views .toolbar-row {
+            display: contents;
+        }
+
         /* 面取り正方形ボタン */
         .pen-btn {
-            width: 100%;
+            flex: 1;
             height: 32px;
             border-radius: 6px;
             border: 1.5px solid #CBD5E1;
@@ -272,7 +282,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 0.52rem;
+            font-size: 0.5rem;
             font-weight: 900;
             color: #334155;
             cursor: pointer;
@@ -285,8 +295,15 @@
         }
 
         body.two-views .pen-btn {
-            width: 32px;
+            flex: none;
+            width: 38px;
             height: 32px;
+        }
+
+        /* 2画面時の「はじめから」「1つもどす」ボタン幅を1画面時(約60px)と揃える */
+        body.two-views #btn-reset,
+        body.two-views #btn-undo {
+            width: 60px;
         }
 
         .pen-btn:hover {
@@ -333,33 +350,58 @@
 
     <!-- ペンツールバー -->
     <div id="pen-toolbar" class="pen-toolbar">
-        <button id="btn-pen-black" class="pen-btn" title="黒ペン">
-            <span class="w-2.5 h-2.5 rounded-full bg-black mb-0.5"></span>
-            <span>黒</span>
-        </button>
-        <button id="btn-pen-red" class="pen-btn" title="赤ペン">
-            <span class="w-2.5 h-2.5 rounded-full bg-red-500 mb-0.5"></span>
-            <span>赤</span>
-        </button>
-        <button id="btn-pen-blue" class="pen-btn" title="青ペン">
-            <span class="w-2.5 h-2.5 rounded-full bg-blue-500 mb-0.5"></span>
-            <span>青</span>
-        </button>
-        <button id="btn-eraser" class="pen-btn" title="けしゴム">
-            <svg class="w-3 h-3 text-slate-700 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 20H7L3 16C2.5 15.5 2.5 14.5 3 14L13 4C13.5 3.5 14.5 3.5 15 4L20 9C20.5 9.5 20.5 10.5 20 11L11 20"/>
-                <path d="M6 11L13 18"/>
-            </svg>
-            <span>けしゴム</span>
-        </button>
-        <button id="btn-clear" class="pen-btn" title="全消去">
-            <span class="text-[10px] leading-none mb-0.5">🗑️</span>
-            <span>全消去</span>
-        </button>
-        <button id="btn-laser" class="pen-btn" title="レーザーポインター">
-            <span class="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_4px_#ef4444] mb-0.5"></span>
-            <span>レーザー</span>
-        </button>
+        <!-- 上段：はじめから・1つもどす -->
+        <div class="toolbar-row">
+            <button id="btn-reset" class="pen-btn" title="はじめから">
+                <svg class="w-3 h-3 text-slate-700 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                </svg>
+                <span>はじめから</span>
+            </button>
+            <button id="btn-undo" class="pen-btn" title="1つもどす">
+                <svg class="w-3 h-3 text-slate-700 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 14L4 9l5-5"/>
+                    <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>
+                </svg>
+                <span>1つもどす</span>
+            </button>
+        </div>
+
+        <!-- 中段：黒・赤・青 -->
+        <div class="toolbar-row">
+            <button id="btn-pen-black" class="pen-btn" title="黒ペン">
+                <span class="w-2.5 h-2.5 rounded-full bg-black mb-0.5"></span>
+                <span>黒</span>
+            </button>
+            <button id="btn-pen-red" class="pen-btn" title="赤ペン">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 mb-0.5"></span>
+                <span>赤</span>
+            </button>
+            <button id="btn-pen-blue" class="pen-btn" title="青ペン">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500 mb-0.5"></span>
+                <span>青</span>
+            </button>
+        </div>
+
+        <!-- 下段：けしゴム・全消去・レーザー -->
+        <div class="toolbar-row">
+            <button id="btn-eraser" class="pen-btn" title="けしゴム">
+                <svg class="w-3 h-3 text-slate-700 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 20H7L3 16C2.5 15.5 2.5 14.5 3 14L13 4C13.5 3.5 14.5 3.5 15 4L20 9C20.5 9.5 20.5 10.5 20 11L11 20"/>
+                    <path d="M6 11L13 18"/>
+                </svg>
+                <span>けしゴム</span>
+            </button>
+            <button id="btn-clear" class="pen-btn" title="全消去">
+                <span class="text-[10px] leading-none mb-0.5">🗑️</span>
+                <span>全消去</span>
+            </button>
+            <button id="btn-laser" class="pen-btn" title="レーザーポインター">
+                <span class="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_4px_#ef4444] mb-0.5"></span>
+                <span>レーザー</span>
+            </button>
+        </div>
     </div>
 
     <!-- お絵描き用キャンバス層 -->
@@ -398,6 +440,10 @@
             { id: 'grid-container-2', multiplicand: 0, multiplier: 0, isDragging: false }
         ];
 
+        // 履歴管理（Undo / Reset）
+        let historyStack = [];
+        const MAX_HISTORY = 30;
+
         let isTwoViews = false;
         let activeTool = null; // null (指モード), 'black', 'red', 'blue', 'eraser', 'laser'
         let isDrawing = false;
@@ -412,11 +458,70 @@
         const laserCanvas = document.getElementById('laser-canvas');
         const laserCtx = laserCanvas.getContext('2d');
 
+        function saveState() {
+            // 現在のグリッド状態とキャンバス状態をディープコピーして保存
+            const canvasData = drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height);
+            const gridStateCopy = grids.map(g => ({ multiplicand: g.multiplicand, multiplier: g.multiplier }));
+            
+            historyStack.push({
+                grids: gridStateCopy,
+                canvasData: canvasData
+            });
+
+            if (historyStack.length > MAX_HISTORY) {
+                historyStack.shift();
+            }
+        }
+
+        function handleReset() {
+            saveState();
+            // ドット図をリセット (0x0)
+            grids.forEach((g, idx) => {
+                g.multiplicand = 0;
+                g.multiplier = 0;
+                renderGrid(idx);
+            });
+            // キャンバスとレーザーをクリア
+            drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+            laserPaths = [];
+            laserCtx.clearRect(0, 0, laserCanvas.width, laserCanvas.height);
+            selectTool(null);
+        }
+
+        function handleUndo() {
+            if (historyStack.length === 0) return;
+
+            const previousState = historyStack.pop();
+            // グリッド状態復元
+            previousState.grids.forEach((g, idx) => {
+                grids[idx].multiplicand = g.multiplicand;
+                grids[idx].multiplier = g.multiplier;
+                renderGrid(idx);
+            });
+            // キャンバス復元
+            drawCtx.putImageData(previousState.canvasData, 0, 0);
+            laserPaths = [];
+            laserCtx.clearRect(0, 0, laserCanvas.width, laserCanvas.height);
+        }
+
         function resizeCanvases() {
+            // キャンバスサイズ変更時に画像がクリアされるため、一時保持
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = drawCanvas.width;
+            tempCanvas.height = drawCanvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            if (drawCanvas.width > 0 && drawCanvas.height > 0) {
+                tempCtx.drawImage(drawCanvas, 0, 0);
+            }
+
             drawCanvas.width = window.innerWidth;
             drawCanvas.height = window.innerHeight;
             laserCanvas.width = window.innerWidth;
             laserCanvas.height = window.innerHeight;
+
+            if (tempCanvas.width > 0 && tempCanvas.height > 0) {
+                drawCtx.drawImage(tempCanvas, 0, 0);
+            }
         }
 
         // 画面切り替えの処理
@@ -440,6 +545,7 @@
         // ペンツールの選択切替
         function selectTool(tool) {
             if (tool === 'clear') {
+                saveState();
                 drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
                 laserPaths = [];
                 laserCtx.clearRect(0, 0, laserCanvas.width, laserCanvas.height);
@@ -486,9 +592,11 @@
 
             if (activeTool === 'laser') {
                 laserPaths.push({
-                    points: [{ x, y, time: Date.now() }]
+                    points: [{ x, y }],
+                    fadeStart: null
                 });
             } else {
+                saveState();
                 drawCtx.beginPath();
                 drawCtx.moveTo(x, y);
             }
@@ -502,8 +610,8 @@
 
             if (activeTool === 'laser') {
                 const currentPath = laserPaths[laserPaths.length - 1];
-                if (currentPath) {
-                    currentPath.points.push({ x, y, time: Date.now() });
+                if (currentPath && !currentPath.fadeStart) {
+                    currentPath.points.push({ x, y });
                 }
             } else {
                 drawCtx.lineWidth = activeTool === 'eraser' ? 24 : 4;
@@ -529,40 +637,62 @@
 
         // 描画終了
         function stopDrawing() {
+            if (isDrawing && activeTool === 'laser') {
+                const currentPath = laserPaths[laserPaths.length - 1];
+                if (currentPath && !currentPath.fadeStart) {
+                    currentPath.fadeStart = Date.now();
+                }
+            }
             isDrawing = false;
         }
 
-        // レーザーポインターのアニメーションループ (2秒後に消滅)
+        // レーザーポインターのアニメーションループ (赤い残像・点が残らない滑らかな全体フェードアウト)
         function renderLaser() {
             laserCtx.clearRect(0, 0, laserCanvas.width, laserCanvas.height);
             const now = Date.now();
+            const FADE_DURATION = 2000; // 描画終了から2秒間で完全消失
 
             laserPaths.forEach(path => {
-                // 2秒以内のポイントだけ保持
-                path.points = path.points.filter(p => now - p.time < 2000);
+                let alpha = 1.0;
+                if (path.fadeStart) {
+                    const elapsed = now - path.fadeStart;
+                    alpha = Math.max(0, 1 - elapsed / FADE_DURATION);
+                }
 
-                if (path.points.length < 2) return;
+                if (alpha <= 0 || path.points.length === 0) return;
 
-                for (let i = 1; i < path.points.length; i++) {
-                    const p1 = path.points[i - 1];
-                    const p2 = path.points[i];
-                    const age = now - p2.time;
-                    const alpha = Math.max(0, 1 - age / 2000);
-
+                laserCtx.save();
+                if (path.points.length === 1) {
+                    // 単発タップの場合
                     laserCtx.beginPath();
-                    laserCtx.moveTo(p1.x, p1.y);
-                    laserCtx.lineTo(p2.x, p2.y);
+                    laserCtx.arc(path.points[0].x, path.points[0].y, 3, 0, Math.PI * 2);
+                    laserCtx.fillStyle = `rgba(239, 68, 68, ${alpha})`;
+                    laserCtx.shadowColor = `rgba(239, 68, 68, ${alpha * 0.8})`;
+                    laserCtx.shadowBlur = 8;
+                    laserCtx.fill();
+                } else {
+                    // 連続線の場合（1つのパスとして一括描画し、重なりによる点の発生を防ぐ）
+                    laserCtx.beginPath();
+                    laserCtx.moveTo(path.points[0].x, path.points[0].y);
+                    for (let i = 1; i < path.points.length; i++) {
+                        laserCtx.lineTo(path.points[i].x, path.points[i].y);
+                    }
                     laserCtx.strokeStyle = `rgba(239, 68, 68, ${alpha})`;
                     laserCtx.lineWidth = 6;
                     laserCtx.lineCap = 'round';
-                    laserCtx.shadowColor = '#EF4444';
+                    laserCtx.lineJoin = 'round';
+                    laserCtx.shadowColor = `rgba(239, 68, 68, ${alpha * 0.8})`;
                     laserCtx.shadowBlur = 8;
                     laserCtx.stroke();
                 }
+                laserCtx.restore();
             });
 
-            // 空になったパスの削除
-            laserPaths = laserPaths.filter(path => path.points.length > 0);
+            // 完全に消えたパスの削除
+            laserPaths = laserPaths.filter(path => {
+                if (!path.fadeStart) return true;
+                return (now - path.fadeStart) < FADE_DURATION;
+            });
 
             requestAnimationFrame(renderLaser);
         }
@@ -570,7 +700,10 @@
         function initGrids() {
             document.getElementById('view-toggle-btn').addEventListener('click', toggleViewMode);
 
-            // ペンツールボタンのイベント登録
+            // 操作履歴・ペンツールボタンのイベント登録
+            document.getElementById('btn-reset').addEventListener('click', handleReset);
+            document.getElementById('btn-undo').addEventListener('click', handleUndo);
+
             document.getElementById('btn-pen-black').addEventListener('click', () => selectTool('black'));
             document.getElementById('btn-pen-red').addEventListener('click', () => selectTool('red'));
             document.getElementById('btn-pen-blue').addEventListener('click', () => selectTool('blue'));
@@ -605,6 +738,7 @@
                     numBox.addEventListener('pointerdown', (e) => {
                         if (activeTool) return;
                         e.preventDefault();
+                        saveState();
                         setDimensions(index, gridState.multiplicand, c);
                     });
                     container.appendChild(numBox);
@@ -622,6 +756,7 @@
                     rowBox.addEventListener('pointerdown', (e) => {
                         if (activeTool) return;
                         e.preventDefault();
+                        saveState();
                         setDimensions(index, r, gridState.multiplier);
                     });
                     container.appendChild(rowBox);
@@ -642,6 +777,7 @@
                         cell.addEventListener('pointerdown', (e) => {
                             if (activeTool) return;
                             e.preventDefault();
+                            saveState();
                             gridState.isDragging = true;
                             setDimensions(index, r, c);
                         });
