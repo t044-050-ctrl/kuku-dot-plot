@@ -497,6 +497,7 @@
         // 描画関連
         let isDrawing = false;
         let currentPath = [];
+        let activeCanvasId = null;
         const drawnPaths = { 'canvas-1': [], 'canvas-2': [] };
         const laserStrokes = { 'canvas-1': [], 'canvas-2': [] };
 
@@ -784,7 +785,7 @@
                 }
             });
 
-            // レーザーポインター描画（軌跡全体が2秒かけてスムーズにフェードアウト）
+            // レーザーポインター描画（確定後の軌跡：2秒かけてスムーズにフェードアウト）
             const now = Date.now();
             const lasers = laserStrokes[canvasId] || [];
             for (let i = lasers.length - 1; i >= 0; i--) {
@@ -813,6 +814,36 @@
                 ctx.shadowColor = `rgba(239, 68, 68, ${alpha * 0.8})`;
                 ctx.shadowBlur = 8;
                 ctx.stroke();
+                ctx.restore();
+            }
+
+            // 現在描画中のレーザーポインター（指の動きにリアルタイム即時追従）
+            if (isDrawing && activeTool === 'laser' && activeCanvasId === canvasId && currentPath.length > 0) {
+                ctx.save();
+                ctx.globalCompositeOperation = 'source-over';
+                if (currentPath.length >= 2) {
+                    ctx.beginPath();
+                    ctx.moveTo(currentPath[0].x, currentPath[0].y);
+                    for (let j = 1; j < currentPath.length; j++) {
+                        ctx.lineTo(currentPath[j].x, currentPath[j].y);
+                    }
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+                    ctx.strokeStyle = 'rgba(239, 68, 68, 1)';
+                    ctx.lineWidth = 6;
+                    ctx.shadowColor = 'rgba(239, 68, 68, 0.8)';
+                    ctx.shadowBlur = 8;
+                    ctx.stroke();
+                }
+
+                // 指の先端にリアルタイム赤ポインターを表示
+                const lastPt = currentPath[currentPath.length - 1];
+                ctx.beginPath();
+                ctx.arc(lastPt.x, lastPt.y, 4, 0, Math.PI * 2);
+                ctx.fillStyle = '#EF4444';
+                ctx.shadowColor = '#EF4444';
+                ctx.shadowBlur = 8;
+                ctx.fill();
                 ctx.restore();
             }
         }
@@ -887,6 +918,7 @@
             canvas.addEventListener('pointerdown', (e) => {
                 if (activeTool === null) return;
                 isDrawing = true;
+                activeCanvasId = gridObj.canvasId;
                 const rect = canvas.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
@@ -894,6 +926,8 @@
 
                 if (activeTool !== 'laser') {
                     saveState();
+                } else {
+                    redrawCanvas(gridObj.canvasId);
                 }
             });
 
@@ -908,6 +942,9 @@
                     drawnPaths[gridObj.canvasId].push({ tool: activeTool, points: [...currentPath] });
                     currentPath = [{ x, y }];
                     redrawCanvas(gridObj.canvasId);
+                } else {
+                    // レーザーの場合も指の移動に合わせて即時再描画
+                    redrawCanvas(gridObj.canvasId);
                 }
             });
 
@@ -921,6 +958,7 @@
                     });
                 }
                 currentPath = [];
+                activeCanvasId = null;
             };
 
             canvas.addEventListener('pointerup', stopDrawing);
