@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>九九ドット図</title>
-    <meta property="og:title" content="九九ドット図">
-　　<meta property="og:description" content="【算数】かけ算九九のドット図アプリです。１画面モードと２画面モードがあります。">
-　　<meta property="og:type" content="website">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -158,7 +155,7 @@
             transition: all 0.15s ease;
         }
 
-        /* 数字非表示モード（位置・サイズを保つため visibility: hidden） */
+        /* 数字非表示モード */
         body.hide-numbers .header-kakeru-title,
         body.hide-numbers .header-kakerareru-title,
         body.hide-numbers .num-box-kakeru,
@@ -264,6 +261,28 @@
             width: 100%;
         }
 
+        /* 式・読み・答え 操作パネル（1画面モードのみ） */
+        body.one-view .display-control-toolbar {
+            position: fixed;
+            top: 280px;
+            right: 10px;
+            width: 172px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 5px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #E2E8F0;
+            box-sizing: border-box;
+        }
+
+        body.two-views .display-control-toolbar {
+            display: none !important;
+        }
+
         /* ペンツールバー配置（2画面モード） */
         body.two-views .pen-toolbar {
             position: fixed;
@@ -316,18 +335,15 @@
             height: 42px;
         }
 
-        /* 2画面時のボタン個別サイズ調整 */
         body.two-views #btn-reset,
         body.two-views #btn-undo {
             width: 78px;
         }
 
-        /* 2画面時の数字表示トグルボタン幅：左の「1つもどす」の1.75倍 (78px * 1.75 = 136.5px) */
         body.two-views #btn-toggle-numbers {
             width: 136.5px;
         }
 
-        /* 2画面時のカメラボタン幅 */
         body.two-views #btn-camera {
             width: 49.5px;
         }
@@ -346,6 +362,124 @@
             background-color: #E0F2FE;
             color: #0369A1;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* 1画面時の左側：式・読み・答え表示コンテナ */
+        body.one-view .formula-display-container {
+            position: fixed;
+            top: 6vh;
+            left: max(8px, calc((100vw - min(96vw, 96vh)) / 4 - 100px));
+            width: clamp(120px, calc((100vw - min(96vw, 96vh)) / 2 - 24px), 210px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 0;
+            z-index: 60;
+            pointer-events: auto;
+        }
+
+        body.two-views .formula-display-container {
+            display: none !important;
+        }
+
+        .info-row {
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1px 0;
+            margin: 0;
+        }
+
+        #row-shiki {
+            margin-bottom: 0.8rem; /* 式グループと答えグループの間隔 */
+        }
+
+        .text-yomi {
+            color: #EF4444;
+            font-weight: 900;
+            font-size: clamp(0.95rem, 2vw, 1.6rem);
+            line-height: 1.1;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .text-shiki {
+            color: #0F172A;
+            font-weight: 900;
+            font-size: clamp(2.8rem, 6.5vw, 5.8rem);
+            line-height: 1.1;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .text-ans-yomi {
+            color: #EF4444;
+            font-weight: 900;
+            font-size: clamp(0.95rem, 2vw, 1.6rem);
+            line-height: 1.1;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .text-ans {
+            color: #0F172A;
+            font-weight: 900;
+            font-size: clamp(2.8rem, 6.5vw, 5.8rem);
+            line-height: 1.1;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .ga-text {
+            font-size: 0.72em;
+            font-weight: 900;
+        }
+
+        /* マスク（面取り長方形） */
+        .info-mask {
+            position: absolute;
+            inset: 1px 0px;
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            border-style: solid;
+            border-width: 1px;
+            z-index: 10;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #mask-yomi, #mask-ans-yomi {
+            border-color: #EF4444;
+        }
+
+        #mask-shiki {
+            border-color: #EAB308;
+        }
+
+        #mask-ans {
+            border-color: #3B82F6;
+        }
+
+        .info-mask::after {
+            content: '👁️';
+            font-size: 0.85rem;
+            opacity: 0.5;
+        }
+
+        .info-mask:hover {
+            transform: scale(1.03);
+            background-color: #F8FAFC;
+        }
+
+        .info-mask:active {
+            transform: scale(0.97);
         }
 
         /* キャンバスレイヤー */
@@ -448,6 +582,83 @@
         </div>
     </div>
 
+    <!-- 式・読み・答え 操作パネル -->
+    <div id="display-control-toolbar" class="display-control-toolbar">
+        <!-- 1段目: 読み -->
+        <div class="toolbar-row">
+            <button id="btn-toggle-yomi" class="pen-btn" style="flex: 2;" title="読みを表示・非表示">
+                <svg class="w-3.5 h-3.5 text-slate-700 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+                <span>読みを出す</span>
+            </button>
+            <button id="btn-mask-yomi" class="pen-btn" style="flex: 1;" title="読みをかくす">
+                <svg class="w-3 h-3 text-slate-700 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                </svg>
+                <span>かくす</span>
+            </button>
+        </div>
+
+        <!-- 2段目: 式 -->
+        <div class="toolbar-row">
+            <button id="btn-toggle-shiki" class="pen-btn" style="flex: 2;" title="式を表示・非表示">
+                <svg class="w-3.5 h-3.5 text-slate-700 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+                <span>式を出す</span>
+            </button>
+            <button id="btn-mask-shiki" class="pen-btn" style="flex: 1;" title="式をかくす">
+                <svg class="w-3 h-3 text-slate-700 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                </svg>
+                <span>かくす</span>
+            </button>
+        </div>
+
+        <!-- 3段目: 答え -->
+        <div class="toolbar-row">
+            <button id="btn-toggle-ans" class="pen-btn" style="flex: 2;" title="答えを表示・非表示">
+                <svg class="w-3.5 h-3.5 text-slate-700 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+                <span>答えを出す</span>
+            </button>
+            <button id="btn-mask-ans" class="pen-btn" style="flex: 1;" title="答えをかくす">
+                <svg class="w-3 h-3 text-slate-700 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                </svg>
+                <span>かくす</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 1画面時：ドット図の左側に表示する計算情報エリア -->
+    <div id="formula-display-container" class="formula-display-container">
+        <div class="info-row" id="row-yomi">
+            <div class="text-yomi" id="disp-yomi"></div>
+            <div class="info-mask" id="mask-yomi" style="display: none;"></div>
+        </div>
+        <div class="info-row" id="row-shiki">
+            <div class="text-shiki" id="disp-shiki"></div>
+            <div class="info-mask" id="mask-shiki" style="display: none;"></div>
+        </div>
+        <div class="info-row" id="row-ans-yomi">
+            <div class="text-ans-yomi" id="disp-ans-yomi"></div>
+            <div class="info-mask" id="mask-ans-yomi" style="display: none;"></div>
+        </div>
+        <div class="info-row" id="row-ans">
+            <div class="text-ans" id="disp-ans"></div>
+            <div class="info-mask" id="mask-ans" style="display: none;"></div>
+        </div>
+    </div>
+
     <!-- お絵描き用キャンバス層 -->
     <canvas id="draw-canvas" class="canvas-overlay"></canvas>
     <!-- レーザーポインター用キャンバス層 -->
@@ -478,6 +689,99 @@
     </div>
 
     <script>
+        // 九九の読み・答えデータ辞書 (81パターン)
+        const kukuData = {
+            "1-1": { yomi: 'いんいち<span class="ga-text"> が</span>', ansYomi: "いち" },
+            "1-2": { yomi: 'いんに<span class="ga-text"> が</span>', ansYomi: "に" },
+            "1-3": { yomi: 'いんさん<span class="ga-text"> が</span>', ansYomi: "さん" },
+            "1-4": { yomi: 'いんし<span class="ga-text"> が</span>', ansYomi: "し" },
+            "1-5": { yomi: 'いんご<span class="ga-text"> が</span>', ansYomi: "ご" },
+            "1-6": { yomi: 'いんろく<span class="ga-text"> が</span>', ansYomi: "ろく" },
+            "1-7": { yomi: 'いんしち<span class="ga-text"> が</span>', ansYomi: "しち" },
+            "1-8": { yomi: 'いんはち<span class="ga-text"> が</span>', ansYomi: "はち" },
+            "1-9": { yomi: 'いんく<span class="ga-text"> が</span>', ansYomi: "く" },
+
+            "2-1": { yomi: 'にいち<span class="ga-text"> が</span>', ansYomi: "に" },
+            "2-2": { yomi: 'ににん<span class="ga-text"> が</span>', ansYomi: "し" },
+            "2-3": { yomi: 'にさん<span class="ga-text"> が</span>', ansYomi: "ろく" },
+            "2-4": { yomi: 'にし<span class="ga-text"> が</span>', ansYomi: "はち" },
+            "2-5": { yomi: "にご", ansYomi: "じゅう" },
+            "2-6": { yomi: "にろく", ansYomi: "じゅうに" },
+            "2-7": { yomi: "にしち", ansYomi: "じゅうし" },
+            "2-8": { yomi: "にはち", ansYomi: "じゅうろく" },
+            "2-9": { yomi: "にく", ansYomi: "じゅうはち" },
+
+            "3-1": { yomi: 'さんいち<span class="ga-text"> が</span>', ansYomi: "さん" },
+            "3-2": { yomi: 'さんに<span class="ga-text"> が</span>', ansYomi: "ろく" },
+            "3-3": { yomi: 'さざん<span class="ga-text"> が</span>', ansYomi: "く" },
+            "3-4": { yomi: "さんし", ansYomi: "じゅうに" },
+            "3-5": { yomi: "さんご", ansYomi: "じゅうご" },
+            "3-6": { yomi: "さぶろく", ansYomi: "じゅうはち" },
+            "3-7": { yomi: "さんしち", ansYomi: "にじゅういち" },
+            "3-8": { yomi: "さんぱ", ansYomi: "にじゅうし" },
+            "3-9": { yomi: "さんく", ansYomi: "にじゅうしち" },
+
+            "4-1": { yomi: 'しいち<span class="ga-text"> が</span>', ansYomi: "し" },
+            "4-2": { yomi: 'しに<span class="ga-text"> が</span>', ansYomi: "はち" },
+            "4-3": { yomi: "しさん", ansYomi: "じゅうに" },
+            "4-4": { yomi: "しし", ansYomi: "じゅうろく" },
+            "4-5": { yomi: "しご", ansYomi: "にじゅう" },
+            "4-6": { yomi: "しろく", ansYomi: "にじゅうし" },
+            "4-7": { yomi: "ししち", ansYomi: "にじゅうはち" },
+            "4-8": { yomi: "しは", ansYomi: "さんじゅうに" },
+            "4-9": { yomi: "しく", ansYomi: "さんじゅうろく" },
+
+            "5-1": { yomi: 'ごいち<span class="ga-text"> が</span>', ansYomi: "ご" },
+            "5-2": { yomi: "ごに", ansYomi: "じゅう" },
+            "5-3": { yomi: "ごさん", ansYomi: "じゅうご" },
+            "5-4": { yomi: "ごし", ansYomi: "にじゅう" },
+            "5-5": { yomi: "ごご", ansYomi: "にじゅうご" },
+            "5-6": { yomi: "ごろく", ansYomi: "さんじゅう" },
+            "5-7": { yomi: "ごしち", ansYomi: "さんじゅうご" },
+            "5-8": { yomi: "ごは", ansYomi: "しじゅう" },
+            "5-9": { yomi: "ごっく", ansYomi: "しじゅうご" },
+
+            "6-1": { yomi: 'ろくいち<span class="ga-text"> が</span>', ansYomi: "ろく" },
+            "6-2": { yomi: "ろくに", ansYomi: "じゅうに" },
+            "6-3": { yomi: "ろくさん", ansYomi: "じゅうはち" },
+            "6-4": { yomi: "ろくし", ansYomi: "にじゅうし" },
+            "6-5": { yomi: "ろくご", ansYomi: "さんじゅう" },
+            "6-6": { yomi: "ろくろく", ansYomi: "さんじゅうろく" },
+            "6-7": { yomi: "ろくしち", ansYomi: "しじゅうに" },
+            "6-8": { yomi: "ろくは", ansYomi: "しじゅうはち" },
+            "6-9": { yomi: "ろっく", ansYomi: "ごじゅうし" },
+
+            "7-1": { yomi: 'しちいち<span class="ga-text"> が</span>', ansYomi: "しち" },
+            "7-2": { yomi: "しちに", ansYomi: "じゅうし" },
+            "7-3": { yomi: "しちさん", ansYomi: "にじゅういち" },
+            "7-4": { yomi: "しちし", ansYomi: "にじゅうはち" },
+            "7-5": { yomi: "しちご", ansYomi: "さんじゅうご" },
+            "7-6": { yomi: "しちろく", ansYomi: "しじゅうに" },
+            "7-7": { yomi: "しちしち", ansYomi: "しじゅうく" },
+            "7-8": { yomi: "しちは", ansYomi: "ごじゅうろく" },
+            "7-9": { yomi: "しちく", ansYomi: "ろくじゅうさん" },
+
+            "8-1": { yomi: 'はちいち<span class="ga-text"> が</span>', ansYomi: "はち" },
+            "8-2": { yomi: "はちに", ansYomi: "じゅうろく" },
+            "8-3": { yomi: "はちさん", ansYomi: "にじゅうし" },
+            "8-4": { yomi: "はちし", ansYomi: "さんじゅうに" },
+            "8-5": { yomi: "はちご", ansYomi: "しじゅう" },
+            "8-6": { yomi: "はちろく", ansYomi: "しじゅうはち" },
+            "8-7": { yomi: "はちしち", ansYomi: "ごじゅうろく" },
+            "8-8": { yomi: "はっぱ", ansYomi: "ろくじゅうし" },
+            "8-9": { yomi: "はっく", ansYomi: "しちじゅうに" },
+
+            "9-1": { yomi: 'くいち<span class="ga-text"> が</span>', ansYomi: "く" },
+            "9-2": { yomi: "くに", ansYomi: "じゅうはち" },
+            "9-3": { yomi: "くさん", ansYomi: "にじゅうしち" },
+            "9-4": { yomi: "くし", ansYomi: "さんじゅうろく" },
+            "9-5": { yomi: "くご", ansYomi: "しじゅうご" },
+            "9-6": { yomi: "くろく", ansYomi: "ごじゅうし" },
+            "9-7": { yomi: "くしち", ansYomi: "ろくじゅうさん" },
+            "9-8": { yomi: "くは", ansYomi: "しちじゅうに" },
+            "9-9": { yomi: "くく", ansYomi: "はちじゅういち" }
+        };
+
         // グリッド状態管理
         const grids = [
             { id: 'grid-container-1', multiplicand: 0, multiplier: 0, isDragging: false },
@@ -489,13 +793,26 @@
         const MAX_HISTORY = 30;
 
         let isTwoViews = false;
-        let showNumbers = true; // 初期状態は数字表示
-        let activeTool = null; // null (指モード), 'black', 'red', 'blue', 'eraser', 'laser'
+        let showNumbers = true;
+        let activeTool = null;
         let isDrawing = false;
         let lastX = 0;
         let lastY = 0;
 
-        // レーザーポインターの軌跡データ [{ points: [{x, y}], fadeStart: null | timestamp }]
+        // 表示・マスク状態管理（初期状態はすべてOFF）
+        let showYomi = false;
+        let showShiki = false;
+        let showAns = false;
+
+        let isMaskYomiOn = false;
+        let isMaskShikiOn = false;
+        let isMaskAnsOn = false;
+
+        let maskActiveYomi = false;
+        let maskActiveShiki = false;
+        let maskActiveAns = false;
+
+        // レーザーポインターの軌跡データ
         let laserPaths = [];
 
         const drawCanvas = document.getElementById('draw-canvas');
@@ -504,7 +821,6 @@
         const laserCtx = laserCanvas.getContext('2d');
 
         function saveState() {
-            // 現在のグリッド状態とキャンバス状態をディープコピーして保存
             const canvasData = drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height);
             const gridStateCopy = grids.map(g => ({ multiplicand: g.multiplicand, multiplier: g.multiplier }));
             
@@ -520,33 +836,31 @@
 
         function handleReset() {
             saveState();
-            // ドット図をリセット (0x0)
             grids.forEach((g, idx) => {
                 g.multiplicand = 0;
                 g.multiplier = 0;
                 renderGrid(idx);
             });
-            // キャンバスとレーザーをクリア
             drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
             laserPaths = [];
             laserCtx.clearRect(0, 0, laserCanvas.width, laserCanvas.height);
             selectTool(null);
+            updateFormulaDisplay();
         }
 
         function handleUndo() {
             if (historyStack.length === 0) return;
 
             const previousState = historyStack.pop();
-            // グリッド状態復元
             previousState.grids.forEach((g, idx) => {
                 grids[idx].multiplicand = g.multiplicand;
                 grids[idx].multiplier = g.multiplier;
                 renderGrid(idx);
             });
-            // キャンバス復元
             drawCtx.putImageData(previousState.canvasData, 0, 0);
             laserPaths = [];
             laserCtx.clearRect(0, 0, laserCanvas.width, laserCanvas.height);
+            updateFormulaDisplay();
         }
 
         function toggleNumbersDisplay() {
@@ -596,6 +910,7 @@
                 btnText.innerText = '2画面にする';
             }
             resizeCanvases();
+            updateFormulaDisplay();
         }
 
         function selectTool(tool) {
@@ -609,12 +924,11 @@
             }
 
             if (activeTool === tool) {
-                activeTool = null; // 再タップで選択解除 (指モードへ)
+                activeTool = null;
             } else {
                 activeTool = tool;
             }
 
-            // ボタンのアクティブ状態を更新
             ['black', 'red', 'blue', 'eraser', 'laser'].forEach(t => {
                 const btn = document.getElementById(`btn-${t === 'eraser' ? 'eraser' : (t === 'laser' ? 'laser' : 'pen-' + t)}`);
                 if (btn) {
@@ -700,7 +1014,7 @@
         function renderLaser() {
             laserCtx.clearRect(0, 0, laserCanvas.width, laserCanvas.height);
             const now = Date.now();
-            const FADE_DURATION = 2000; // 描画終了から2秒間で完全消失
+            const FADE_DURATION = 2000;
 
             laserPaths.forEach(path => {
                 let alpha = 1.0;
@@ -713,7 +1027,6 @@
 
                 laserCtx.save();
                 if (path.points.length === 1) {
-                    // 単発タップの場合
                     laserCtx.beginPath();
                     laserCtx.arc(path.points[0].x, path.points[0].y, 4, 0, Math.PI * 2);
                     laserCtx.fillStyle = `rgba(239, 68, 68, ${alpha})`;
@@ -721,7 +1034,6 @@
                     laserCtx.shadowBlur = 8;
                     laserCtx.fill();
                 } else {
-                    // 連続線の場合（一括描画して先端と線を同時に一連で描画）
                     laserCtx.beginPath();
                     laserCtx.moveTo(path.points[0].x, path.points[0].y);
                     for (let i = 1; i < path.points.length; i++) {
@@ -738,7 +1050,6 @@
                 laserCtx.restore();
             });
 
-            // 完全に消えたパスの削除
             laserPaths = laserPaths.filter(path => {
                 if (!path.fadeStart) return true;
                 return (now - path.fadeStart) < FADE_DURATION;
@@ -747,11 +1058,81 @@
             requestAnimationFrame(renderLaser);
         }
 
+        // 式・読み・答え表示更新処理
+        function updateFormulaDisplay() {
+            const grid1 = grids[0];
+            const r = grid1.multiplicand;
+            const c = grid1.multiplier;
+
+            const dispYomi = document.getElementById('disp-yomi');
+            const dispShiki = document.getElementById('disp-shiki');
+            const dispAnsYomi = document.getElementById('disp-ans-yomi');
+            const dispAns = document.getElementById('disp-ans');
+
+            const rowYomi = document.getElementById('row-yomi');
+            const rowShiki = document.getElementById('row-shiki');
+            const rowAnsYomi = document.getElementById('row-ans-yomi');
+            const rowAns = document.getElementById('row-ans');
+
+            const maskYomi = document.getElementById('mask-yomi');
+            const maskShiki = document.getElementById('mask-shiki');
+            const maskAnsYomi = document.getElementById('mask-ans-yomi');
+            const maskAns = document.getElementById('mask-ans');
+
+            const hasNumbers = (r > 0 && c > 0);
+
+            if (hasNumbers) {
+                const key = `${r}-${c}`;
+                const data = kukuData[key] || { yomi: '', ansYomi: '' };
+                dispYomi.innerHTML = data.yomi;
+                dispShiki.innerText = `${r}×${c}`;
+                dispAnsYomi.innerText = data.ansYomi;
+                dispAns.innerText = `${r * c}`;
+            } else {
+                dispYomi.innerText = '';
+                dispShiki.innerText = '';
+                dispAnsYomi.innerText = '';
+                dispAns.innerText = '';
+            }
+
+            // 表示状態
+            rowYomi.style.visibility = (showYomi && hasNumbers) ? 'visible' : 'hidden';
+            rowAnsYomi.style.visibility = (showYomi && hasNumbers) ? 'visible' : 'hidden';
+            rowShiki.style.visibility = (showShiki && hasNumbers) ? 'visible' : 'hidden';
+            rowAns.style.visibility = (showAns && hasNumbers) ? 'visible' : 'hidden';
+
+            // マスク状態
+            maskYomi.style.display = (showYomi && maskActiveYomi && hasNumbers) ? 'block' : 'none';
+            maskAnsYomi.style.display = (showYomi && maskActiveYomi && hasNumbers) ? 'block' : 'none';
+            maskShiki.style.display = (showShiki && maskActiveShiki && hasNumbers) ? 'block' : 'none';
+            maskAns.style.display = (showAns && maskActiveAns && hasNumbers) ? 'block' : 'none';
+
+            updateButtonStates();
+        }
+
+        function updateButtonStates() {
+            const btnYomi = document.getElementById('btn-toggle-yomi');
+            const btnShiki = document.getElementById('btn-toggle-shiki');
+            const btnAns = document.getElementById('btn-toggle-ans');
+
+            const btnMaskYomi = document.getElementById('btn-mask-yomi');
+            const btnMaskShiki = document.getElementById('btn-mask-shiki');
+            const btnMaskAns = document.getElementById('btn-mask-ans');
+
+            if (showYomi) btnYomi.classList.add('active'); else btnYomi.classList.remove('active');
+            if (showShiki) btnShiki.classList.add('active'); else btnShiki.classList.remove('active');
+            if (showAns) btnAns.classList.add('active'); else btnAns.classList.remove('active');
+
+            if (isMaskYomiOn) btnMaskYomi.classList.add('active'); else btnMaskYomi.classList.remove('active');
+            if (isMaskShikiOn) btnMaskShiki.classList.add('active'); else btnMaskShiki.classList.remove('active');
+            if (isMaskAnsOn) btnMaskAns.classList.add('active'); else btnMaskAns.classList.remove('active');
+        }
+
         async function takeScreenshot() {
             try {
                 await document.fonts.ready;
 
-                const scale = 2; // 高解像度出力用倍率
+                const scale = 2;
                 const w = window.innerWidth;
                 const h = window.innerHeight;
 
@@ -762,7 +1143,7 @@
 
                 ctx.scale(scale, scale);
 
-                // 1. 背景（白）
+                // 1. 背景
                 ctx.fillStyle = '#FFFFFF';
                 ctx.fillRect(0, 0, w, h);
 
@@ -794,7 +1175,7 @@
                     }
                 }
 
-                // 2. タイトル要素の描画（表示状態のみ）
+                // 2. タイトル要素の描画
                 if (showNumbers) {
                     document.querySelectorAll('.header-kakeru-title').forEach(el => {
                         const rect = el.getBoundingClientRect();
@@ -832,7 +1213,6 @@
                         }
                     });
 
-                    // 3. 数字ヘッダーボックスの描画
                     document.querySelectorAll('.num-box-kakeru, .num-box-kakerareru').forEach(el => {
                         const rect = el.getBoundingClientRect();
                         if (rect.width > 0 && rect.height > 0) {
@@ -855,7 +1235,7 @@
                     });
                 }
 
-                // 4. グリッドセルの描画
+                // 3. グリッドセルの描画
                 document.querySelectorAll('.grid-cell').forEach(cell => {
                     const rect = cell.getBoundingClientRect();
                     if (rect.width > 0 && rect.height > 0) {
@@ -866,7 +1246,6 @@
                         drawRoundedRect(rect.left, rect.top, rect.width, rect.height, 10, bgColor, strokeColor, 2);
 
                         if (isSelected) {
-                            // ドット（オレンジ色の円）を描画
                             ctx.beginPath();
                             ctx.arc(rect.left + rect.width / 2, rect.top + rect.height / 2, (rect.width * 0.78) / 2, 0, Math.PI * 2);
                             ctx.fillStyle = '#FB9236';
@@ -874,6 +1253,65 @@
                         }
                     }
                 });
+
+                // 4. 左側表示エリアの描画（1画面モード時）
+                if (!isTwoViews && (grids[0].multiplicand > 0 && grids[0].multiplier > 0)) {
+                    const items = [
+                        { textId: 'disp-yomi', maskId: 'mask-yomi', rowId: 'row-yomi' },
+                        { textId: 'disp-shiki', maskId: 'mask-shiki', rowId: 'row-shiki' },
+                        { textId: 'disp-ans-yomi', maskId: 'mask-ans-yomi', rowId: 'row-ans-yomi' },
+                        { textId: 'disp-ans', maskId: 'mask-ans', rowId: 'row-ans' }
+                    ];
+
+                    items.forEach(item => {
+                        const rowEl = document.getElementById(item.rowId);
+                        const textEl = document.getElementById(item.textId);
+                        const maskEl = document.getElementById(item.maskId);
+
+                        if (rowEl && rowEl.style.visibility !== 'hidden' && textEl) {
+                            const rect = textEl.getBoundingClientRect();
+                            const style = window.getComputedStyle(textEl);
+                            ctx.fillStyle = style.color;
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+
+                            const textStr = textEl.innerText;
+                            const fontSize = parseFloat(style.fontSize);
+
+                            if (textStr.endsWith(' が')) {
+                                const baseText = textStr.slice(0, -2);
+                                ctx.font = `900 ${fontSize}px "Zen Maru Gothic", sans-serif`;
+                                const baseWidth = ctx.measureText(baseText).width;
+                                const gaFontSize = fontSize * 0.72;
+                                ctx.font = `900 ${gaFontSize}px "Zen Maru Gothic", sans-serif`;
+                                const gaWidth = ctx.measureText(' が').width;
+
+                                const totalWidth = baseWidth + gaWidth;
+                                const startX = rect.left + rect.width / 2 - totalWidth / 2;
+
+                                ctx.textAlign = 'left';
+                                ctx.font = `900 ${fontSize}px "Zen Maru Gothic", sans-serif`;
+                                ctx.fillText(baseText, startX, rect.top + rect.height / 2);
+
+                                ctx.font = `900 ${gaFontSize}px "Zen Maru Gothic", sans-serif`;
+                                ctx.fillText(' が', startX + baseWidth, rect.top + rect.height / 2);
+                            } else {
+                                ctx.font = `900 ${fontSize}px "Zen Maru Gothic", sans-serif`;
+                                ctx.fillText(textStr, rect.left + rect.width / 2, rect.top + rect.height / 2);
+                            }
+
+                            if (maskEl && maskEl.style.display !== 'none') {
+                                const mRect = maskEl.getBoundingClientRect();
+                                let strokeCol = '#64748B';
+                                if (item.maskId.includes('yomi')) strokeCol = '#EF4444';
+                                else if (item.maskId.includes('shiki')) strokeCol = '#EAB308';
+                                else if (item.maskId.includes('ans')) strokeCol = '#3B82F6';
+
+                                drawRoundedRect(mRect.left, mRect.top, mRect.width, mRect.height, 8, '#FFFFFF', strokeCol, 1);
+                            }
+                        }
+                    });
+                }
 
                 // 5. お絵描き線の合成
                 ctx.drawImage(drawCanvas, 0, 0, w, h);
@@ -891,7 +1329,6 @@
         function initGrids() {
             document.getElementById('view-toggle-btn').addEventListener('click', toggleViewMode);
 
-            // 操作履歴・ペンツール・数字非表示ボタンのイベント登録
             document.getElementById('btn-reset').addEventListener('click', handleReset);
             document.getElementById('btn-undo').addEventListener('click', handleUndo);
             document.getElementById('btn-toggle-numbers').addEventListener('click', toggleNumbersDisplay);
@@ -903,6 +1340,64 @@
             document.getElementById('btn-eraser').addEventListener('click', () => selectTool('eraser'));
             document.getElementById('btn-clear').addEventListener('click', () => selectTool('clear'));
             document.getElementById('btn-laser').addEventListener('click', () => selectTool('laser'));
+
+            // 式・読み・答え操作ボタン
+            document.getElementById('btn-toggle-yomi').addEventListener('click', () => {
+                showYomi = !showYomi;
+                if (!showYomi) {
+                    isMaskYomiOn = false;
+                    maskActiveYomi = false;
+                }
+                updateFormulaDisplay();
+            });
+            document.getElementById('btn-toggle-shiki').addEventListener('click', () => {
+                showShiki = !showShiki;
+                if (!showShiki) {
+                    isMaskShikiOn = false;
+                    maskActiveShiki = false;
+                }
+                updateFormulaDisplay();
+            });
+            document.getElementById('btn-toggle-ans').addEventListener('click', () => {
+                showAns = !showAns;
+                if (!showAns) {
+                    isMaskAnsOn = false;
+                    maskActiveAns = false;
+                }
+                updateFormulaDisplay();
+            });
+
+            document.getElementById('btn-mask-yomi').addEventListener('click', () => {
+                isMaskYomiOn = !isMaskYomiOn;
+                maskActiveYomi = isMaskYomiOn;
+                updateFormulaDisplay();
+            });
+            document.getElementById('btn-mask-shiki').addEventListener('click', () => {
+                isMaskShikiOn = !isMaskShikiOn;
+                maskActiveShiki = isMaskShikiOn;
+                updateFormulaDisplay();
+            });
+            document.getElementById('btn-mask-ans').addEventListener('click', () => {
+                isMaskAnsOn = !isMaskAnsOn;
+                maskActiveAns = isMaskAnsOn;
+                updateFormulaDisplay();
+            });
+
+            // マスクタップで消去
+            ['mask-yomi', 'mask-ans-yomi'].forEach(id => {
+                document.getElementById(id).addEventListener('click', () => {
+                    maskActiveYomi = false;
+                    updateFormulaDisplay();
+                });
+            });
+            document.getElementById('mask-shiki').addEventListener('click', () => {
+                maskActiveShiki = false;
+                updateFormulaDisplay();
+            });
+            document.getElementById('mask-ans').addEventListener('click', () => {
+                maskActiveAns = false;
+                updateFormulaDisplay();
+            });
 
             window.addEventListener('resize', resizeCanvases);
             resizeCanvases();
@@ -918,7 +1413,6 @@
             grids.forEach((gridState, index) => {
                 const container = document.getElementById(gridState.id);
 
-                // 1. Top Column Headers (かける数 1~9)
                 for (let c = 1; c <= 9; c++) {
                     const numBox = document.createElement('div');
                     numBox.id = `col-num-${index}-${c}`;
@@ -936,7 +1430,6 @@
                     container.appendChild(numBox);
                 }
 
-                // 2. Grid Cells and Row Headers (かけられる数 1~9)
                 for (let r = 1; r <= 9; r++) {
                     const rowBox = document.createElement('div');
                     rowBox.id = `row-num-${index}-${r}`;
@@ -984,7 +1477,6 @@
                     }
                 }
 
-                // タッチ・ドラッグ操作対応
                 container.addEventListener('pointermove', (e) => {
                     if (activeTool || !gridState.isDragging) return;
                     const target = document.elementFromPoint(e.clientX, e.clientY);
@@ -1007,14 +1499,25 @@
                 grids.forEach(g => g.isDragging = false);
             });
 
-            // レーザーアニメーションループスタート
+            updateFormulaDisplay();
             requestAnimationFrame(renderLaser);
         }
 
         function setDimensions(index, r, c) {
+            const prevR = grids[index].multiplicand;
+            const prevC = grids[index].multiplier;
+
             grids[index].multiplicand = Math.max(0, Math.min(9, r));
             grids[index].multiplier = Math.max(0, Math.min(9, c));
             renderGrid(index);
+
+            // ドットの数が変化した場合、自動的にマスクを適用
+            if (index === 0 && (prevR !== grids[0].multiplicand || prevC !== grids[0].multiplier)) {
+                if (isMaskYomiOn) maskActiveYomi = true;
+                if (isMaskShikiOn) maskActiveShiki = true;
+                if (isMaskAnsOn) maskActiveAns = true;
+                updateFormulaDisplay();
+            }
         }
 
         function renderGrid(index) {
@@ -1030,7 +1533,6 @@
                 }
             }
 
-            // かける数 ハイライト (薄い表示から濃い表示へ連動)
             for (let c = 1; c <= 9; c++) {
                 const colBox = document.getElementById(`col-num-${index}-${c}`);
                 if (!colBox) continue;
@@ -1043,7 +1545,6 @@
                 }
             }
 
-            // かけられる数 ハイライト (薄い表示から濃い表示へ連動)
             for (let r = 1; r <= 9; r++) {
                 const rowBox = document.getElementById(`row-num-${index}-${r}`);
                 if (!rowBox) continue;
