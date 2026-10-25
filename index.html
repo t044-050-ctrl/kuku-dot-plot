@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>九九ドット図</title>
-    <meta property="og:title" content="九九ドット図">
-    <meta property="og:description" content="【２年算数かけ算】九九のドット図アプリです。１画面モードと２画面モードがあります。">
-    <meta property="og:type" content="website">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -456,24 +453,31 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 900;
         }
 
         #mask-yomi, #mask-ans-yomi {
             border-color: #EF4444;
+            color: #EF4444;
         }
 
         #mask-shiki {
-            border-color: #EAB308;
+            border-color: #FFC000;
+            color: #FFC000;
         }
 
         #mask-ans {
             border-color: #3B82F6;
+            color: #3B82F6;
         }
 
-        .info-mask::after {
-            content: '👁️';
-            font-size: 0.85rem;
-            opacity: 0.5;
+        #mask-shiki::after {
+            content: 'しき';
+        }
+
+        #mask-ans::after {
+            content: 'こたえ';
         }
 
         .info-mask:hover {
@@ -1306,11 +1310,32 @@
                             if (maskEl && maskEl.style.display !== 'none') {
                                 const mRect = maskEl.getBoundingClientRect();
                                 let strokeCol = '#64748B';
-                                if (item.maskId.includes('yomi')) strokeCol = '#EF4444';
-                                else if (item.maskId.includes('shiki')) strokeCol = '#EAB308';
-                                else if (item.maskId.includes('ans')) strokeCol = '#3B82F6';
+                                let labelText = '';
+                                let labelColor = '#64748B';
+
+                                if (item.maskId.includes('yomi')) {
+                                    strokeCol = '#EF4444';
+                                    labelText = '';
+                                    labelColor = '#EF4444';
+                                } else if (item.maskId.includes('shiki')) {
+                                    strokeCol = '#FFC000';
+                                    labelText = 'しき';
+                                    labelColor = '#FFC000';
+                                } else if (item.maskId.includes('ans')) {
+                                    strokeCol = '#3B82F6';
+                                    labelText = 'こたえ';
+                                    labelColor = '#3B82F6';
+                                }
 
                                 drawRoundedRect(mRect.left, mRect.top, mRect.width, mRect.height, 8, '#FFFFFF', strokeCol, 1);
+
+                                if (labelText) {
+                                    ctx.fillStyle = labelColor;
+                                    ctx.font = '900 14px "Zen Maru Gothic", sans-serif';
+                                    ctx.textAlign = 'center';
+                                    ctx.textBaseline = 'middle';
+                                    ctx.fillText(labelText, mRect.left + mRect.width / 2, mRect.top + mRect.height / 2);
+                                }
                             }
                         }
                     });
@@ -1372,16 +1397,25 @@
 
             document.getElementById('btn-mask-yomi').addEventListener('click', () => {
                 isMaskYomiOn = !isMaskYomiOn;
+                if (isMaskYomiOn) {
+                    showYomi = true;
+                }
                 maskActiveYomi = isMaskYomiOn;
                 updateFormulaDisplay();
             });
             document.getElementById('btn-mask-shiki').addEventListener('click', () => {
                 isMaskShikiOn = !isMaskShikiOn;
+                if (isMaskShikiOn) {
+                    showShiki = true;
+                }
                 maskActiveShiki = isMaskShikiOn;
                 updateFormulaDisplay();
             });
             document.getElementById('btn-mask-ans').addEventListener('click', () => {
                 isMaskAnsOn = !isMaskAnsOn;
+                if (isMaskAnsOn) {
+                    showAns = true;
+                }
                 maskActiveAns = isMaskAnsOn;
                 updateFormulaDisplay();
             });
